@@ -23,10 +23,14 @@ type EnvVar[T any] interface {
 
 	// StringValue should be called after Read to
 	// return the unparsed environment variable value
+	//
+	// Prefer Value() over StringValue() when possible.
 	StringValue() string
 
 	// Value should be called after Read to
 	// return the parsed environment variable value
+	//
+	// If Read() has not been called, Value must panic.
 	Value() T
 
 	// String provides the full variable documentation, including

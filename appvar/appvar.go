@@ -2,9 +2,17 @@
 package appvar
 
 import (
-	"github.com/torgebo/envvar"
+	"errors"
 	"fmt"
+	"github.com/torgebo/envvar"
 	"strings"
+)
+
+var (
+	ErrNotRead = errors.New("variable has not been read")
+	errPanic   = func(e error) {
+		panic(e)
+	}
 )
 
 // New creates a envvar.EnvVar[string] that reads in a string
@@ -102,6 +110,9 @@ func (av *appVar[T]) StringValue() string {
 }
 
 func (av *appVar[T]) Value() T {
+	if !av.read {
+		errPanic(fmt.Errorf("exiting: envvar: %w", ErrNotRead))
+	}
 	return av.varvalue
 }
 

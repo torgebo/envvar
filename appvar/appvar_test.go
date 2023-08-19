@@ -1,8 +1,8 @@
 package appvar
 
 import (
-	"github.com/torgebo/envvar"
 	"fmt"
+	"github.com/torgebo/envvar"
 	"strconv"
 	"testing"
 	"time"
@@ -76,4 +76,17 @@ APPVARTEST2__testintvar: This should be an integer
 `; exp != description {
 		t.Errorf("expected vvs.String()='%s', got '%s'", exp, description)
 	}
+}
+
+func TestEnvVarValueBeforeRead(t *testing.T) {
+	var errPanicCalled = false
+	errPanic = func(_ error) {
+		errPanicCalled = true
+	}
+	ev := NewTyped(`APPVARTEST1`, `testtimevar`, `this should be a datetime`, timeParser)
+	ev.Value()
+	if !errPanicCalled {
+		t.Errorf("expected errPanic to be called, got errPanicCalled=%t", errPanicCalled)
+	}
+
 }
