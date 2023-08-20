@@ -11,25 +11,25 @@ var (
 	}
 )
 
-type ReadString interface {
-	Read() error
+type SetString interface {
+	Set() error
 	String() string
 }
 
 // ToVars is a convenient way to construct Vars
-func ToVars(evs ...ReadString) Vars {
+func ToVars(evs ...SetString) Vars {
 	return Vars(evs)
 }
 
-// Vars is handy to Read in and output a summary string
+// Vars is handy to Set in and output a summary string
 // from several EnvVar-s
-type Vars []ReadString
+type Vars []SetString
 
-// Read reads in all variables in the collection
-func (vs Vars) Read() error {
+// Set reads in all variables in the collection
+func (vs Vars) Set() error {
 	var err error
 	for _, ev := range vs {
-		if err = ev.Read(); err != nil {
+		if err = ev.Set(); err != nil {
 			return err
 		}
 	}

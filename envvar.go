@@ -18,23 +18,23 @@ type EnvVar[T any] interface {
 	// Description provides the entity description.
 	Description() string
 
-	// Read reads, parses and sets Value
-	Read() error
+	// Set reads, parses and sets Value
+	Set() error
 
-	// StringValue should be called after Read to
+	// StringValue should be called after Set to
 	// return the unparsed environment variable value
 	//
 	// Prefer Value() over StringValue() when possible.
 	StringValue() string
 
-	// Value should be called after Read to
+	// Value should be called after Set to
 	// return the parsed environment variable value
 	//
-	// If Read() has not been called, Value must panic.
+	// If Set() has not been called, Value must panic.
 	Value() T
 
 	// String provides the full variable documentation, including
-	// Name(), Description() and StringValue() if Read() has been
+	// Name(), Description() and StringValue() if Set() has been
 	// successfully called
 	String() string
 }

@@ -37,8 +37,8 @@ func CmpString[V any](t *testing.T, ev EnvVar[V], expString string) {
 
 // EnvVarTest runs test by
 //  1. mocking out the underlying `osReader` function
-//  2. Calling ev.Read()
-//     a. comparing expReadErr with actual output of `ev.Read()`
+//  2. Calling ev.Set()
+//     a. comparing expReadErr with actual output of `ev.Set()`
 //     b. observing that the call to `osReader` is performed
 //  3. Consecutively comparing the values provided by the
 //     other interface methods.
@@ -58,7 +58,7 @@ func EnvVarTest[V comparable](
 		observeRead = true
 		return mockOsReader(name)
 	}
-	if err := ev.Read(); err != nil {
+	if err := ev.Set(); err != nil {
 		if expReadErr != nil {
 			if errors.Is(err, expReadErr) {
 				return

@@ -55,7 +55,7 @@ func TestEnvVar(t *testing.T) {
 	ev2 := NewTyped(`APPVARTEST2`, `testintvar`, `This should be an integer`, intParser)
 	vvs := envvar.ToVars(ev1, ev2)
 
-	if err := vvs.Read(); err != nil {
+	if err := vvs.Set(); err != nil {
 		t.Error(err)
 		return
 	}
@@ -78,7 +78,7 @@ APPVARTEST2__testintvar: This should be an integer
 	}
 }
 
-func TestEnvVarValueBeforeRead(t *testing.T) {
+func TestEnvVarValueBeforeSet(t *testing.T) {
 	var errPanicCalled = false
 	errPanic = func(_ error) {
 		errPanicCalled = true

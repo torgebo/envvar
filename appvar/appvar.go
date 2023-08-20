@@ -86,7 +86,7 @@ func (av *appVar[T]) Description() string {
 	return av.description
 }
 
-func (av *appVar[T]) Read() error {
+func (av *appVar[T]) Set() error {
 	if av.read {
 		return nil
 	}
