@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	ErrNotRead = errors.New("variable has not been read")
+	ErrNotSet = errors.New("variable has not been set")
 	errPanic   = func(e error) {
 		panic(e)
 	}
@@ -29,7 +29,7 @@ func New(appname, varname, description string) envvar.EnvVar[string] {
 		description: description,
 		stringvalue: "",
 		varvalue:    "",
-		read:        false,
+		set:        false,
 		parser:      parser,
 	}
 }
@@ -46,7 +46,7 @@ func NewTyped[T any](appname, varname, description string, parser func(string) (
 		description: description,
 		stringvalue: "",
 		varvalue:    t,
-		read:        false,
+		set:        false,
 		parser:      parser,
 	}
 }
@@ -74,7 +74,7 @@ type appVar[T any] struct {
 	description string
 	stringvalue string
 	varvalue    T
-	read        bool
+	set        bool
 	parser      func(string) (T, error)
 }
 
@@ -87,7 +87,7 @@ func (av *appVar[T]) Description() string {
 }
 
 func (av *appVar[T]) Set() error {
-	if av.read {
+	if av.set {
 		return nil
 	}
 	name := av.Name()
@@ -101,7 +101,7 @@ func (av *appVar[T]) Set() error {
 		return err
 	}
 	av.varvalue = value
-	av.read = true
+	av.set = true
 	return nil
 }
 
@@ -110,8 +110,8 @@ func (av *appVar[T]) StringValue() string {
 }
 
 func (av *appVar[T]) Value() T {
-	if !av.read {
-		errPanic(fmt.Errorf("exiting: envvar: %w", ErrNotRead))
+	if !av.set {
+		errPanic(fmt.Errorf("exiting: envvar: %w", ErrNotSet))
 	}
 	return av.varvalue
 }
