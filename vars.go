@@ -39,7 +39,7 @@ func (vs Vars) Read() error {
 // String formats a helper description string from all variables in the collection
 func (vs Vars) String() string {
 	var builder strings.Builder
-	if _, err := builder.WriteString("Environment Variables:\n"); err != nil {
+	if _, err := builder.WriteString("Required Environment Variables:\n"); err != nil {
 		errPanic(fmt.Errorf("exiting: envvar: %w", err))
 	}
 	for _, ev := range vs {

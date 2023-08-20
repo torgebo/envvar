@@ -70,7 +70,7 @@ func TestEnvVar(t *testing.T) {
 	}
 
 	description := vvs.String()
-	if exp := `Environment Variables:
+	if exp := `Required Environment Variables:
 APPVARTEST1__testtimevar: this should be a datetime
 APPVARTEST2__testintvar: This should be an integer
 `; exp != description {
