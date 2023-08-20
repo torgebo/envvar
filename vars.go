@@ -1,6 +1,15 @@
 package envvar
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
+
+var (
+	errPanic = func(e error) {
+		panic(e)
+	}
+)
 
 type ReadString interface {
 	Read() error
@@ -31,14 +40,14 @@ func (vs Vars) Read() error {
 func (vs Vars) String() string {
 	var builder strings.Builder
 	if _, err := builder.WriteString("Environment Variables:\n"); err != nil {
-		panic(err)
+		errPanic(fmt.Errorf("exiting: envvar: %w", err))
 	}
 	for _, ev := range vs {
 		if _, err := builder.WriteString(ev.String()); err != nil {
-			panic(err)
+			errPanic(fmt.Errorf("exiting: envvar: %w", err))
 		}
 		if _, err := builder.WriteString("\n"); err != nil {
-			panic(err)
+			errPanic(fmt.Errorf("exiting: envvar: %w", err))
 		}
 	}
 	return builder.String()
