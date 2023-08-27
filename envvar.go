@@ -3,8 +3,8 @@
 package envvar
 
 import (
-	"os"
 	"errors"
+	"os"
 )
 
 // OsReader is the preferred method for reading system environment variables
@@ -15,6 +15,25 @@ var OsReader = func(name string) (string, bool) {
 
 var ErrValueNotRead = errors.New("Value not read")
 
+// EnvVarCollection is the minimal interface for manipulating collections of EnvVar-s.
+type EnvVarCollection interface {
+	// Set reads, parses and sets Value
+	Set() error
+
+	// String provides the full variable documentation, including
+	// Name(), Description() and StringValue() if Set() has been
+	// successfully called
+	String() string
+
+	// ValueRead should be called after a call to Value
+	//
+	// Use this to check whether Value() has been called
+	// for each member of the collection.
+	// If Value has not previously been called it will return
+	// an error that Is of type `ErrValueNotRead`.
+	ValueRead() error
+}
+
 // EnvVar is an entity holding standard information on an environment variable
 type EnvVar[T any] interface {
 	// Name provides the entity name
@@ -22,9 +41,6 @@ type EnvVar[T any] interface {
 
 	// Description provides the entity description.
 	Description() string
-
-	// Set reads, parses and sets Value
-	Set() error
 
 	// StringValue should be called after Set to
 	// return the unparsed environment variable value
@@ -38,15 +54,5 @@ type EnvVar[T any] interface {
 	// If Set() has not been called, Value must panic.
 	Value() T
 
-	// ValueRead should be called after a call to Value
-	//
-	// Use this to check whether Value() has been called.
-	// If Value has not previously been called it will return
-	// an error that Is of type `ErrValueNotRead`.
-	ValueRead() error
-
-	// String provides the full variable documentation, including
-	// Name(), Description() and StringValue() if Set() has been
-	// successfully called
-	String() string
+	EnvVarCollection
 }

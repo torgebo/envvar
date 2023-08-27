@@ -18,7 +18,7 @@ type SetString interface {
 }
 
 // ToVars is a convenient way to construct Vars
-func ToVars(evs ...SetString) Vars {
+func ToVars(evs ...SetString) EnvVarCollection {
 	return Vars(evs)
 }
 

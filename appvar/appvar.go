@@ -10,7 +10,7 @@ import (
 
 var (
 	ErrNotSet = errors.New("variable has not been set")
-	errPanic   = func(e error) {
+	errPanic  = func(e error) {
 		panic(e)
 	}
 )
@@ -29,7 +29,7 @@ func New(appname, varname, description string) envvar.EnvVar[string] {
 		description: description,
 		stringvalue: "",
 		varvalue:    "",
-		setcalled:        false,
+		setcalled:   false,
 		valuecalled: false,
 		parser:      parser,
 	}
@@ -47,7 +47,7 @@ func NewTyped[T any](appname, varname, description string, parser func(string) (
 		description: description,
 		stringvalue: "",
 		varvalue:    t,
-		setcalled:        false,
+		setcalled:   false,
 		valuecalled: false,
 		parser:      parser,
 	}
@@ -76,7 +76,7 @@ type appVar[T any] struct {
 	description string
 	stringvalue string
 	varvalue    T
-	setcalled        bool
+	setcalled   bool
 	valuecalled bool
 	parser      func(string) (T, error)
 }
