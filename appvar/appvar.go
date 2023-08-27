@@ -29,7 +29,8 @@ func New(appname, varname, description string) envvar.EnvVar[string] {
 		description: description,
 		stringvalue: "",
 		varvalue:    "",
-		set:        false,
+		setcalled:        false,
+		valuecalled: false,
 		parser:      parser,
 	}
 }
@@ -46,7 +47,8 @@ func NewTyped[T any](appname, varname, description string, parser func(string) (
 		description: description,
 		stringvalue: "",
 		varvalue:    t,
-		set:        false,
+		setcalled:        false,
+		valuecalled: false,
 		parser:      parser,
 	}
 }
@@ -74,7 +76,8 @@ type appVar[T any] struct {
 	description string
 	stringvalue string
 	varvalue    T
-	set        bool
+	setcalled        bool
+	valuecalled bool
 	parser      func(string) (T, error)
 }
 
@@ -87,7 +90,7 @@ func (av *appVar[T]) Description() string {
 }
 
 func (av *appVar[T]) Set() error {
-	if av.set {
+	if av.setcalled {
 		return nil
 	}
 	name := av.Name()
@@ -101,7 +104,7 @@ func (av *appVar[T]) Set() error {
 		return err
 	}
 	av.varvalue = value
-	av.set = true
+	av.setcalled = true
 	return nil
 }
 
@@ -110,10 +113,21 @@ func (av *appVar[T]) StringValue() string {
 }
 
 func (av *appVar[T]) Value() T {
-	if !av.set {
+	if !av.setcalled {
 		errPanic(fmt.Errorf("exiting: envvar: %w", ErrNotSet))
 	}
+	av.valuecalled = true
 	return av.varvalue
+}
+
+func (av *appVar[T]) ValueRead() error {
+	if !av.valuecalled {
+		return fmt.Errorf(
+			"envvar: '%s', '%s': %w",
+			av.appname, av.varname, envvar.ErrValueNotRead,
+		)
+	}
+	return nil
 }
 
 func (av *appVar[T]) String() string {

@@ -14,6 +14,7 @@ var (
 type SetString interface {
 	Set() error
 	String() string
+	ValueRead() error
 }
 
 // ToVars is a convenient way to construct Vars
@@ -30,6 +31,16 @@ func (vs Vars) Set() error {
 	var err error
 	for _, ev := range vs {
 		if err = ev.Set(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// ValueRead verifies that Value has been called on each member
+func (cs Vars) ValueRead() error {
+	for _, ev := range cs {
+		if err := ev.ValueRead(); err != nil {
 			return err
 		}
 	}
