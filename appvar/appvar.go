@@ -20,19 +20,7 @@ func New(appname, varname, description string) envvar.EnvVar[string] {
 	parser := func(strvalue string) (string, error) {
 		return strvalue, nil
 	}
-	if err := validate[string](appname, varname, description, parser); err != nil {
-		errPanic(fmt.Errorf("exiting: envvar: %w", err))
-	}
-	return &appVar[string]{
-		appname:     appname,
-		varname:     varname,
-		description: description,
-		stringvalue: "",
-		varvalue:    "",
-		setcalled:   false,
-		valuecalled: false,
-		parser:      parser,
-	}
+	return NewTyped[string](appname, varname, description, parser)
 }
 
 // NewTyped creates a envvar.EnvVar with a custom parser
