@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	ErrNotRead = errors.New("variable has not been read")
-	errPanic   = func(e error) {
+	ErrNotSet = errors.New("variable has not been set")
+	errPanic  = func(e error) {
 		panic(e)
 	}
 )
@@ -20,18 +20,7 @@ func New(appname, varname, description string) envvar.EnvVar[string] {
 	parser := func(strvalue string) (string, error) {
 		return strvalue, nil
 	}
-	if err := validate[string](appname, varname, description, parser); err != nil {
-		errPanic(fmt.Errorf("exiting: envvar: %w", err))
-	}
-	return &appVar[string]{
-		appname:     appname,
-		varname:     varname,
-		description: description,
-		stringvalue: "",
-		varvalue:    "",
-		read:        false,
-		parser:      parser,
-	}
+	return NewTyped[string](appname, varname, description, parser)
 }
 
 // NewTyped creates a envvar.EnvVar with a custom parser
@@ -46,7 +35,8 @@ func NewTyped[T any](appname, varname, description string, parser func(string) (
 		description: description,
 		stringvalue: "",
 		varvalue:    t,
-		read:        false,
+		setcalled:   false,
+		valuecalled: false,
 		parser:      parser,
 	}
 }
@@ -74,7 +64,8 @@ type appVar[T any] struct {
 	description string
 	stringvalue string
 	varvalue    T
-	read        bool
+	setcalled   bool
+	valuecalled bool
 	parser      func(string) (T, error)
 }
 
@@ -86,8 +77,8 @@ func (av *appVar[T]) Description() string {
 	return av.description
 }
 
-func (av *appVar[T]) Read() error {
-	if av.read {
+func (av *appVar[T]) Set() error {
+	if av.setcalled {
 		return nil
 	}
 	name := av.Name()
@@ -101,7 +92,7 @@ func (av *appVar[T]) Read() error {
 		return err
 	}
 	av.varvalue = value
-	av.read = true
+	av.setcalled = true
 	return nil
 }
 
@@ -110,10 +101,21 @@ func (av *appVar[T]) StringValue() string {
 }
 
 func (av *appVar[T]) Value() T {
-	if !av.read {
-		errPanic(fmt.Errorf("exiting: envvar: %w", ErrNotRead))
+	if !av.setcalled {
+		errPanic(fmt.Errorf("exiting: envvar: %w", ErrNotSet))
 	}
+	av.valuecalled = true
 	return av.varvalue
+}
+
+func (av *appVar[T]) ValueRead() error {
+	if !av.valuecalled {
+		return fmt.Errorf(
+			"envvar: '%s', '%s': %w",
+			av.appname, av.varname, envvar.ErrValueNotRead,
+		)
+	}
+	return nil
 }
 
 func (av *appVar[T]) String() string {
