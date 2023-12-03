@@ -32,7 +32,7 @@ var intParser = func(numstring string) (int, error) {
 }
 
 func TestAppVarTime(t *testing.T) {
-	ev := NewTyped(`testtimevar`, `this should be a datetime`, timeParser)
+	ev := New(`testtimevar`, `this should be a datetime`, timeParser)
 
 	envvar.EnvVarTest(
 		t,
@@ -51,8 +51,8 @@ func TestAppVarTime(t *testing.T) {
 func TestEnvVar(t *testing.T) {
 	envvar.OsReader = osReader1
 
-	ev1 := NewTyped(`testtimevar`, `this should be a datetime`, timeParser)
-	ev2 := NewTyped(`testintvar`, `This should be an integer`, intParser)
+	ev1 := New(`testtimevar`, `this should be a datetime`, timeParser)
+	ev2 := New(`testintvar`, `This should be an integer`, intParser)
 	vvs := envvar.ToVars(ev1, ev2)
 
 	if err := vvs.Set(); err != nil {
@@ -83,7 +83,7 @@ func TestEnvVarValueBeforeSet(t *testing.T) {
 	errPanic = func(_ error) {
 		errPanicCalled = true
 	}
-	ev := NewTyped(`testtimevar`, `this should be a datetime`, timeParser)
+	ev := New(`testtimevar`, `this should be a datetime`, timeParser)
 	ev.Value()
 	if !errPanicCalled {
 		t.Errorf("expected errPanic to be called, got errPanicCalled=%t", errPanicCalled)

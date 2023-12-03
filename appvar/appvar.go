@@ -16,15 +16,15 @@ var (
 )
 
 // New creates a envvar.EnvVar[string] that reads in a string
-func New(varname, description string) envvar.EnvVar[string] {
+func NewStringed(varname, description string) envvar.EnvVar[string] {
 	parser := func(strvalue string) (string, error) {
 		return strvalue, nil
 	}
-	return NewTyped[string](varname, description, parser)
+	return New[string](varname, description, parser)
 }
 
-// NewTyped creates a envvar.EnvVar with a custom parser
-func NewTyped[T any](varname, description string, parser func(string) (T, error)) envvar.EnvVar[T] {
+// New creates a envvar.EnvVar with a custom parser of type `T`
+func New[T any](varname, description string, parser func(string) (T, error)) envvar.EnvVar[T] {
 	if err := validate[T](varname, description, parser); err != nil {
 		errPanic(fmt.Errorf("exiting: envvar: %w", err))
 	}
