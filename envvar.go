@@ -1,4 +1,4 @@
-// envvar provides the interface that environment variables should implement
+// Package envvar provides the interface that environment variables should implement
 // as well as the `OsReader` method for wrapping os.LookupEnv
 package envvar
 
@@ -13,7 +13,7 @@ var OsReader = func(name string) (string, bool) {
 	return os.LookupEnv(name)
 }
 
-var ErrValueNotRead = errors.New("Value not read")
+var ErrValueNotRead = errors.New("value not read")
 
 // EnvVarCollection is the minimal interface for manipulating collections of EnvVar-s.
 type EnvVarCollection interface {

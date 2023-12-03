@@ -38,8 +38,8 @@ func (vs Vars) Set() error {
 }
 
 // ValueRead verifies that Value has been called on each member
-func (cs Vars) ValueRead() error {
-	for _, ev := range cs {
+func (vs Vars) ValueRead() error {
+	for _, ev := range vs {
 		if err := ev.ValueRead(); err != nil {
 			return err
 		}

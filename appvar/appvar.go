@@ -4,8 +4,9 @@ package appvar
 import (
 	"errors"
 	"fmt"
-	"github.com/torgebo/envvar"
 	"strings"
+
+	"github.com/torgebo/envvar"
 )
 
 var (
@@ -15,7 +16,7 @@ var (
 	}
 )
 
-// New creates a envvar.EnvVar[string] that reads in a string
+// NewStringed creates a envvar.EnvVar[string] that reads in a string
 func NewStringed(varname, description string) envvar.EnvVar[string] {
 	parser := func(strvalue string) (string, error) {
 		return strvalue, nil

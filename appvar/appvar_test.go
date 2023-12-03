@@ -2,10 +2,11 @@ package appvar
 
 import (
 	"fmt"
-	"github.com/torgebo/envvar"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/torgebo/envvar"
 )
 
 var number int = 3
