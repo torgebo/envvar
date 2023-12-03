@@ -16,21 +16,20 @@ var (
 )
 
 // New creates a envvar.EnvVar[string] that reads in a string
-func New(appname, varname, description string) envvar.EnvVar[string] {
+func New(varname, description string) envvar.EnvVar[string] {
 	parser := func(strvalue string) (string, error) {
 		return strvalue, nil
 	}
-	return NewTyped[string](appname, varname, description, parser)
+	return NewTyped[string](varname, description, parser)
 }
 
 // NewTyped creates a envvar.EnvVar with a custom parser
-func NewTyped[T any](appname, varname, description string, parser func(string) (T, error)) envvar.EnvVar[T] {
-	if err := validate[T](appname, varname, description, parser); err != nil {
+func NewTyped[T any](varname, description string, parser func(string) (T, error)) envvar.EnvVar[T] {
+	if err := validate[T](varname, description, parser); err != nil {
 		errPanic(fmt.Errorf("exiting: envvar: %w", err))
 	}
 	var t T
 	return &appVar[T]{
-		appname:     appname,
 		varname:     varname,
 		description: description,
 		stringvalue: "",
@@ -41,10 +40,7 @@ func NewTyped[T any](appname, varname, description string, parser func(string) (
 	}
 }
 
-func validate[T any](appname, varname, description string, parser func(string) (T, error)) error {
-	if strings.TrimSpace(appname) == "" {
-		return fmt.Errorf("invalid appname '%s'", appname)
-	}
+func validate[T any](varname, description string, parser func(string) (T, error)) error {
 	if strings.TrimSpace(varname) == "" {
 		return fmt.Errorf("invalid varname '%s'", varname)
 	}
@@ -57,9 +53,8 @@ func validate[T any](appname, varname, description string, parser func(string) (
 	return nil
 }
 
-// appVar provides environment variables of Name prefixed with `appname`
+// appVar provides environment variable `varname`
 type appVar[T any] struct {
-	appname     string
 	varname     string
 	description string
 	stringvalue string
@@ -70,7 +65,7 @@ type appVar[T any] struct {
 }
 
 func (av *appVar[T]) Name() string {
-	return av.appname + "__" + av.varname
+	return av.varname
 }
 
 func (av *appVar[T]) Description() string {
@@ -111,8 +106,8 @@ func (av *appVar[T]) Value() T {
 func (av *appVar[T]) ValueRead() error {
 	if !av.valuecalled {
 		return fmt.Errorf(
-			"envvar: '%s', '%s': %w",
-			av.appname, av.varname, envvar.ErrValueNotRead,
+			"envvar: '%s': %w",
+			av.varname, envvar.ErrValueNotRead,
 		)
 	}
 	return nil
