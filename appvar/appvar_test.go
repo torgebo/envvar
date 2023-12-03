@@ -15,9 +15,9 @@ var testTime = time.Now().Truncate(time.Second)
 var testTimeString = testTime.Format(time.RFC3339)
 
 func osReader1(name string) (string, bool) {
-	if name == `APPVARTEST1__testtimevar` {
+	if name == `testtimevar` {
 		return testTimeString, true
-	} else if name == `APPVARTEST2__testintvar` {
+	} else if name == `testintvar` {
 		return nums, true
 	}
 	return "", false
@@ -32,18 +32,18 @@ var intParser = func(numstring string) (int, error) {
 }
 
 func TestAppVarTime(t *testing.T) {
-	ev := NewTyped(`APPVARTEST1`, `testtimevar`, `this should be a datetime`, timeParser)
+	ev := NewTyped(`testtimevar`, `this should be a datetime`, timeParser)
 
 	envvar.EnvVarTest(
 		t,
 		ev,
 		osReader1,
 		nil,
-		`APPVARTEST1__testtimevar`,
+		`testtimevar`,
 		`this should be a datetime`,
 		testTime.Format(time.RFC3339),
 		testTime,
-		`APPVARTEST1__testtimevar: this should be a datetime`,
+		`testtimevar: this should be a datetime`,
 	)
 
 }
@@ -51,8 +51,8 @@ func TestAppVarTime(t *testing.T) {
 func TestEnvVar(t *testing.T) {
 	envvar.OsReader = osReader1
 
-	ev1 := NewTyped(`APPVARTEST1`, `testtimevar`, `this should be a datetime`, timeParser)
-	ev2 := NewTyped(`APPVARTEST2`, `testintvar`, `This should be an integer`, intParser)
+	ev1 := NewTyped(`testtimevar`, `this should be a datetime`, timeParser)
+	ev2 := NewTyped(`testintvar`, `This should be an integer`, intParser)
 	vvs := envvar.ToVars(ev1, ev2)
 
 	if err := vvs.Set(); err != nil {
@@ -71,8 +71,8 @@ func TestEnvVar(t *testing.T) {
 
 	description := vvs.String()
 	if exp := `Required Environment Variables:
-APPVARTEST1__testtimevar: this should be a datetime
-APPVARTEST2__testintvar: This should be an integer
+testtimevar: this should be a datetime
+testintvar: This should be an integer
 `; exp != description {
 		t.Errorf("expected vvs.String()='%s', got '%s'", exp, description)
 	}
@@ -83,7 +83,7 @@ func TestEnvVarValueBeforeSet(t *testing.T) {
 	errPanic = func(_ error) {
 		errPanicCalled = true
 	}
-	ev := NewTyped(`APPVARTEST1`, `testtimevar`, `this should be a datetime`, timeParser)
+	ev := NewTyped(`testtimevar`, `this should be a datetime`, timeParser)
 	ev.Value()
 	if !errPanicCalled {
 		t.Errorf("expected errPanic to be called, got errPanicCalled=%t", errPanicCalled)
